@@ -103,7 +103,7 @@ def get_url(url, verb=False):
         else:
             logging.error(f"Error while fetching the url. Status code: {str(re.status_code)}")
             logging.error(f"Problematic url: {url}")
-            return(None)
+            exit(1)
 
 
 def decode_json(json_res):

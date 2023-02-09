@@ -75,6 +75,7 @@ def import_data():
     logging.info(f'OpenEBench tools URL: {URL_OPEB_TOOLS}')
     
     tools = get_url(URL_OPEB_TOOLS)
+    
     logging.info('Tools obtained')
 
     # 3. Get tools
@@ -86,7 +87,7 @@ def import_data():
     for tool in tools:
         n+=1
         if str(n) in landmarks.keys():
-            logging.debug(f'{n}/{len(tools)} ({landmarks[str(n)]}) instances pushed to database\r')
+            logging.info(f'{n}/{len(tools)} ({landmarks[str(n)]}) instances pushed to database\r')
 
         # 4. Process metadata
         tool, log = get_bioconda_biotools_galaxy_tools(tool,log)

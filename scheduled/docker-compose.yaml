@@ -17,4 +17,4 @@ services:
     labels:
       ofelia.enabled: "true"
       ofelia.job-exec.importer.schedule: "0 0 6 * * *"
-      ofelia.job-exec.importer.command: "python3 main.py"
+      ofelia.job-exec.importer.command: "python3 main.py -l=DEBUG"
