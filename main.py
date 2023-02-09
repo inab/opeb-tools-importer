@@ -81,7 +81,12 @@ def import_data():
     log = {'errors':[], 'n_ok':0, 'names': [],'canonical_N': 0}
     logging.info('Processing tools ...')
     #For tool in OPEB Tool db
+    n=0
+    landmarks = {str(int((len(tools)/5)*i)): f"{i*10}%" for i in range(0,10)}
     for tool in tools:
+        n+=1
+        if str(n) in landmarks.keys():
+            logging.debug(f'{n}/{len(tools)} ({landmarks[str(n)]}) instances pushed to database\r')
 
         # 4. Process metadata
         tool, log = get_bioconda_biotools_galaxy_tools(tool,log)
