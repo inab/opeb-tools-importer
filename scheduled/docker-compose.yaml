@@ -1,0 +1,20 @@
+version: "3"
+services:
+  ofelia:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - oeb-tools-importer
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      ofelia.job-local.my-test-job.schedule: "@daily"
+      ofelia.job-local.my-test-job.command: "date"
+
+  oeb-tools-importer:
+    image: registry.gitlab.bsc.es/inb/elixir/software-observatory/opeb-tools-importer
+    network_mode: "host"
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.importer.schedule: "0 0 6 * * *"
+      ofelia.job-exec.importer.command: "python3 main.py"

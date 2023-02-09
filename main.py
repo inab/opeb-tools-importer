@@ -3,12 +3,11 @@ import json
 from matplotlib.font_manager import findfont
 import requests
 import os
+import logging
 
 
 from utils import get_url, connect_db, push_entry, save_entry, print_errors_log
 from dotenv import load_dotenv
-
-load_dotenv()
 
 
 session = requests.Session()
@@ -41,9 +40,26 @@ def get_bioconda_biotools_galaxy_tools(tool, log):
 
 
 def import_data():
+    # 0.1 Set up logging
+    parser = argparse.ArgumentParser(
+        description="Importer of OpenEBench tools from OpenEBench Tool API"
+    )
+    parser.add_argument(
+        "--loglevel", "-l",
+        help=("Set the logging level"),
+        default="INFO",
+    )
+    args = parser.parse_args()
+    numeric_level = getattr(logging, args.loglevel.upper())
 
-    # 0. connect database/set output file
-    print('Connecting to database')
+    logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # 0.2 Load .env
+    load_dotenv()
+
+
+    # 1. connect database/set output file
+    logging.info('Connecting to database')
     STORAGE_MODE = os.getenv('STORAGE_MODE', 'db')
 
     if STORAGE_MODE =='db':
@@ -53,38 +69,37 @@ def import_data():
         OUTPUT_PATH = os.getenv('OUTPUT_PATH', './data/opebtools.json')
 
 
-    # 1. Download all opeb
-    print('Downloading OPEB tools')
+    # 2. Download all opeb
+    logging.info('Downloading OPEB tools')
     URL_OPEB_TOOLS = os.getenv('URL_OPEB_TOOLS', 'https://openebench.bsc.es/monitor/tool')
-    print(f'OpenEBench tools URL: {URL_OPEB_TOOLS}')
+    logging.info(f'OpenEBench tools URL: {URL_OPEB_TOOLS}')
     
     tools = get_url(URL_OPEB_TOOLS)
-    print('Tools obtained')
+    logging.info('Tools obtained')
 
-    # 2. Get tools
+    # 3. Get tools
     log = {'errors':[], 'n_ok':0, 'names': [],'canonical_N': 0}
+    logging.info('Processing tools ...')
     #For tool in OPEB Tool db
     for tool in tools:
 
-        # 3. Process metadata
+        # 4. Process metadata
         tool, log = get_bioconda_biotools_galaxy_tools(tool,log)
 
-        # 4. push to db/file
+        # 5. push to db/file
         if STORAGE_MODE=='db':
             log = push_entry(tool, alambique, log)
 
         else:
             log = save_entry(tool, OUTPUT_PATH, log)
      
-    print(log)
+    logging.info(log)
 
     # Importation finished
-    print(f'''\n----- OPEB Tools Importation finished -----
+    logging.info(f'''\n----- OPEB Tools Importation finished -----
     Number of tools in OPEB {len(log['names'])}
     Number of canonical tools: {log['canonical_N']}''')
     
-    print_errors_log(log)
-
 
 if __name__ == '__main__':
     import_data()

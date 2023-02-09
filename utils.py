@@ -2,6 +2,7 @@ import json
 import os
 import requests
 import ssl
+import logging
 
 from pymongo import MongoClient
 
@@ -20,6 +21,8 @@ def push_entry(tool:dict, collection:'pymongo.collection.Collection', log:dict):
         updateResult = collection.update_many({'@id':tool['@id']}, { '$set': tool }, upsert=True)
     except Exception as e:
         log['errors'].append({'file':tool,'error':e})
+        logging.error(e)
+        logging.error(f'Error saving {tool["name"]}')
         return(log)
     else:
         log['n_ok'] += 1
@@ -45,7 +48,6 @@ def save_entry(tool, output_file, log):
                 json.dump([tool], f)
         else:
             with open(output_file, 'r+') as outfile:
-                print('Saving to file: ' + output_file)
                 data = json.load(outfile)
                 data.append(tool)
                 # Sets file's current position at offset.
@@ -54,8 +56,9 @@ def save_entry(tool, output_file, log):
 
     except Exception as e:
         log['errors'].append({'file':tool['name'],'error':e})
-        raise
-        # return(log)
+        logging.error(e)
+        logging.error(f'Error saving {tool["name"]}')
+        return(log)
 
     else:
         log['n_ok'] += 1
@@ -90,17 +93,18 @@ def get_url(url, verb=False):
     try:
         re = session.get(url, headers=headers, timeout=(10, 30))
     except:
-        print('Impossible to make the request')
-        print(f"Problematic url: {url}")
+        logging.error('Impossible to make the request')
+        logging.error(f"Problematic url: {url}")
         return(None)
     else:
         if re.status_code == 200:
             content_decoded = decode_json(re)
             return(content_decoded)
         else:
-            print(f"Error while fetching the url. Status code: {str(re.status_code)}")
-            print(f"Problematic url: {url}")
+            logging.error(f"Error while fetching the url. Status code: {str(re.status_code)}")
+            logging.error(f"Problematic url: {url}")
             return(None)
+
 
 def decode_json(json_res):
     '''
@@ -114,13 +118,3 @@ def decode_json(json_res):
         return(content_decoded)
 
 
-def print_errors_log(log):
-    print('Exceptions:\n')
-    
-    if len(log['errors']) == 0:
-        print('No errors raised.')
-    else:
-        for e in log['errors']:
-            print(e['error'])
-        
-    return
