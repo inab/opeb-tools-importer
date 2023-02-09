@@ -95,7 +95,7 @@ def get_url(url, verb=False):
     except:
         logging.error('Impossible to make the request')
         logging.error(f"Problematic url: {url}")
-        return(None)
+        exit(1)
     else:
         if re.status_code == 200:
             content_decoded = decode_json(re)
