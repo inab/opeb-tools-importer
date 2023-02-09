@@ -80,7 +80,7 @@ def import_data():
 
     # 3. Get tools
     log = {'errors':[], 'n_ok':0, 'names': [],'canonical_N': 0}
-    logging.info('Processing tools ...')
+    logging.info(f'Processing {len(tools)} tools ...')
     #For tool in OPEB Tool db
     n=0
     landmarks = {str(int((len(tools)/5)*i)): f"{i*10}%" for i in range(0,10)}
