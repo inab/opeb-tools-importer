@@ -85,11 +85,10 @@ def import_data():
     n=0
     landmarks = {str(int((len(tools)/10)*i)): f"{i*10}%" for i in range(0,11)} # 10% landmarks for logging
     for tool in tools:
-        n+=1
         # Report progress in logs
         if str(n) in landmarks.keys():
             logging.info(f'{n}/{len(tools)} ({landmarks[str(n)]}) instances pushed to database\r')
-
+        n+=1
         # 4. Process metadata
         tool, log = get_bioconda_biotools_galaxy_tools(tool,log)
 
