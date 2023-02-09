@@ -6,7 +6,7 @@ import os
 import logging
 
 
-from utils import get_url, connect_db, push_entry, save_entry, print_errors_log
+from utils import get_url, connect_db, push_entry, save_entry
 from dotenv import load_dotenv
 
 
