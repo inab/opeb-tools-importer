@@ -83,9 +83,10 @@ def import_data():
     logging.info(f'Processing {len(tools)} tools ...')
     #For tool in OPEB Tool db
     n=0
-    landmarks = {str(int((len(tools)/5)*i)): f"{i*10}%" for i in range(0,10)}
+    landmarks = {str(int((len(tools)/10)*i)): f"{i*10}%" for i in range(0,11)} # 10% landmarks for logging
     for tool in tools:
         n+=1
+        # Report progress in logs
         if str(n) in landmarks.keys():
             logging.info(f'{n}/{len(tools)} ({landmarks[str(n)]}) instances pushed to database\r')
 
