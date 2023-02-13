@@ -45,9 +45,10 @@ If the ENV variables are stored in an `.env` file:
 3. Execute the importer
 
     ```sh
-    python3 main.py -l=info
+    python3 main.py -l=[log-level] -d=[log-directory]
     ``` 
     `-l/--loglevel` argument can be `debug`, `info`, `warning`, `error` or `critical`. It is optional and defaults to `info`.
+    `-d/--logdir` argument is optional and defaults to `./logs/`.
 
 > This program has been successfully executed using Python 3.8 and 3.9.
 
