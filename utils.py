@@ -23,9 +23,11 @@ def push_entry(tool:dict, collection:'pymongo.collection.Collection', log:dict):
         log['errors'].append({'file':tool,'error':e})
         logging.error(e)
         logging.error(f'Error saving {tool["name"]}')
+        logging.info(f"pushed_to_db - opeb_tools - ERROR")
         return(log)
     else:
         log['n_ok'] += 1
+        logging.info(f"pushed_to_db - opeb_tools - OK")
     finally:
         return(log)
 
