@@ -22,7 +22,7 @@ def get_source(id_):
     source = string.split(':')[0]
     return(source)
 
-def get_bioconda_biotools_galaxy_tools(tool, log):
+def get_bioconda_biotools_galaxy_tools(tool):
     if tool['@id'].count('/')>5:
         source = get_source(tool['@id'])
         if source == 'biotools':
@@ -34,9 +34,9 @@ def get_bioconda_biotools_galaxy_tools(tool, log):
 
         tool['@source_url'] = tool['@id']
     else:
-        log['canonical_N'] +=1
+        logging.info(f'canonical_tool {tool["name"]}')
 
-    return(tool, log)
+    return(tool)
 
 
 def import_data():
@@ -52,13 +52,13 @@ def import_data():
     parser.add_argument(
         "--logdir", "-d",
         help=("Set the logging directory"),
-        default="./logs",
+        default="./logs/summary.log",
     )
     args = parser.parse_args()
     numeric_level = getattr(logging, args.loglevel.upper())
     logs_dir = args.logdir
 
-    logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s', filename=f'{logs_dir}/summary.log', filemode='w')
+    logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s', filename=f'{logs_dir}', filemode='w')
 
     # 0.2 Load .env
     load_dotenv()
@@ -81,37 +81,31 @@ def import_data():
     logging.info(f'OpenEBench tools URL: {URL_OPEB_TOOLS}')
     
     tools = get_url(URL_OPEB_TOOLS)
+    if tools:
     
-    logging.info('Tools obtained')
+        logging.info('Tools obtained')
+        # 3. Get tools
+        logging.info(f'Processing {len(tools)} tools ...')
+        #For tool in OPEB Tool db
+        for tool in tools:       
+            # 4. Process metadata
+            tool = get_bioconda_biotools_galaxy_tools(tool)
 
-    # 3. Get tools
-    log = {'errors':[], 'n_ok':0, 'names': [],'canonical_N': 0}
-    logging.info(f'Processing {len(tools)} tools ...')
-    #For tool in OPEB Tool db
-    n=0
-    landmarks = {str(int((len(tools)/10)*i)): f"{i*10}%" for i in range(0,11)} # 10% landmarks for logging
-    for tool in tools:
-        # Report progress in logs
-        if str(n) in landmarks.keys():
-            logging.info(f'{n}/{len(tools)} ({landmarks[str(n)]}) instances pushed to database\r')
-        n+=1
-        # 4. Process metadata
-        tool, log = get_bioconda_biotools_galaxy_tools(tool,log)
+            # 5. push to db/file
+            if STORAGE_MODE=='db':
+                push_entry(tool, alambique)
 
-        # 5. push to db/file
-        if STORAGE_MODE=='db':
-            log = push_entry(tool, alambique, log)
+            else:
+                save_entry(tool, OUTPUT_PATH)
+        
+        logging.info("end_importation")
 
-        else:
-            log = save_entry(tool, OUTPUT_PATH, log)
-     
-    logging.info(log)
+    else:
+        logging.error('error - crucial_object_empty')
+        logging.error('No content to process. Exiting...')
+        logging.info("end_importation")
+        exit(1)
 
-    # Importation finished
-    logging.info(f'''\n----- OPEB Tools Importation finished -----
-    Number of tools in OPEB {len(log['names'])}
-    Number of canonical tools: {log['canonical_N']}''')
-    
 
 if __name__ == '__main__':
     import_data()
