@@ -58,7 +58,7 @@ def import_data():
     numeric_level = getattr(logging, args.loglevel.upper())
     logs_dir = args.logdir
 
-    logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s', filename=f'{logs_dir}', filemode='w')
+    logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - opeb_tools - %(message)s', filename=f'{logs_dir}', filemode='w')
 
     # 0.2 Load .env
     load_dotenv()
