@@ -62,7 +62,7 @@ def import_data():
 
     # 0.2 Load .env
     load_dotenv()
-    logging.info("start_importation")
+    logging.info("state_importation - start")
 
 
     # 1. connect database/set output file
@@ -99,12 +99,12 @@ def import_data():
             else:
                 save_entry(tool, OUTPUT_PATH)
         
-        logging.info("end_importation")
+        logging.info("state_importation - end")
 
     else:
         logging.error('error - crucial_object_empty')
         logging.error('No content to process. Exiting...')
-        logging.info("end_importation")
+        logging.info("state_importation - end")
         exit(1)
 
 
