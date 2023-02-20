@@ -62,6 +62,7 @@ def import_data():
 
     # 0.2 Load .env
     load_dotenv()
+    logging.info("start_importation")
 
 
     # 1. connect database/set output file
