@@ -3,11 +3,10 @@ import json
 from matplotlib.font_manager import findfont
 import requests
 import os
+import sys
 import logging
 
-
-from utils import get_url, connect_db, push_entry, save_entry
-from dotenv import load_dotenv
+from utils import get_url, connect_db, push_entry, add_metadata_to_entry
 
 
 session = requests.Session()
@@ -15,7 +14,6 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit 537.36 (KHTML, like Gecko) Chrome",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 }
-
 
 def get_source(id_):
     string = id_.split('/')[5]
@@ -35,6 +33,7 @@ def get_bioconda_biotools_galaxy_tools(tool):
         tool['@source_url'] = tool['@id']
     else:
         logging.info(f'canonical_tool {tool["name"]}')
+        return None
 
     return(tool)
 
@@ -50,32 +49,20 @@ def import_data():
             help=("Set the logging level"),
             default="INFO",
         )
-        parser.add_argument(
-            "--logdir", "-d",
-            help=("Set the logging directory"),
-            default="./logs/summary.log",
-        )
+
         args = parser.parse_args()
         numeric_level = getattr(logging, args.loglevel.upper())
-        logs_dir = args.logdir
 
-        logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - opeb_tools - %(message)s', filename=f'{logs_dir}', filemode='w')
-
+        logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - toolshed - %(message)s', stream=sys.stdout)
+        
         # 0.2 Load .env
-        load_dotenv()
         logging.info("state_importation - 1")
 
 
         # 1. connect database/set output file
         logging.info('Connecting to database')
-        STORAGE_MODE = os.getenv('STORAGE_MODE', 'db')
 
-        if STORAGE_MODE =='db':
-            alambique = connect_db()
-
-        else:
-            OUTPUT_PATH = os.getenv('OUTPUT_PATH', './data/opebtools.json')
-
+        alambique = connect_db('alambique')
 
         # 2. Download all opeb
         logging.info('Downloading OPEB tools')
@@ -93,20 +80,35 @@ def import_data():
                 # 4. Process metadata
                 tool = get_bioconda_biotools_galaxy_tools(tool)
 
-                # 5. push to db/file
-                if STORAGE_MODE=='db':
-                    push_entry(tool, alambique)
+                if tool:
+                    type_ = tool['@type']
+                    name = tool['@label']
+                    version = tool['@version']
+                    source = tool['@data_source']
 
-                else:
-                    save_entry(tool, OUTPUT_PATH)
+                    identifier = f"{source}/{name}/{type_}/{version}"
+
+                    entry = {
+                        'data': tool,
+                        '_id': identifier,
+                        '@data_source': source
+                    }
+
+                    document_w_metadata = add_metadata_to_entry(identifier, entry, alambique)
+                    push_entry(document_w_metadata, alambique)
+
+                    # 5. push to db/file
+                    push_entry(tool, alambique)
             
         else:
+            logging.exception("Exception occurred")
             logging.error('error - crucial_object_empty')
             logging.error('No content to processed. content_decoded is empty. Exiting...')
             logging.info("state_importation - 2")
             exit(1) 
         
     except Exception as e:
+        logging.exception("Exception occurred")
         logging.error(f'error - {type(e).__name__}')
         logging.info("state_importation - 2")
         exit(1)
