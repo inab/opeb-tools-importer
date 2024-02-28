@@ -1,32 +1,15 @@
 image: python:3.9-alpine
 
 stages:
-  - dependencies
   - main_task
   - publish
-  
-# Caching can be used to store directories (like installed packages) between jobs.
-cache:
-  paths:
-    - .venv/
-
-# Here, a virtual environment is created and activated in the before_script stage, which runs before 
-# every job's script section. The virtual environment directory (.venv here) is cached so that 
-# it's available for subsequent jobs.
-before_script:
-  - python3 -m venv .venv
-  - source .venv/bin/activate
-
-dependencies:
-  stage: dependencies
-  script:
-    - pip install -r $CI_PROJECT_DIR/requirements.txt
   
 run_metadata_import:
   stage: main_task
   before_script:
     - apk add --no-cache bash 
   script:
+    - pip install -r ./requirements.txt
     - echo "⚙️ Running main task"
     - python3 ./main.py -l DEBUG
     - |
