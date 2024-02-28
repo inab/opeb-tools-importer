@@ -27,7 +27,6 @@ run_metadata_import:
   before_script:
     - apk add --no-cache bash 
   script:
-    - pip install --cache-dir .pip_cache/ -r requirements.txt
     - echo "⚙️ Running main task"
     - python3 ./main.py -l DEBUG
     - |
