@@ -2,11 +2,9 @@ image: python:3.8-alpine
 
 stages:
   - dependencies
-  - test
   - main_task
-  - build
+  - publish
   
-
 # Caching can be used to store directories (like installed packages) between jobs.
 cache:
   paths:
@@ -45,7 +43,6 @@ run_metadata_import:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
   timeout: 4h
-
 
 build_and_push:
   image: docker:latest
