@@ -87,9 +87,6 @@ def import_data():
 
                     document_w_metadata = add_metadata_to_entry(identifier, entry, alambique)
                     push_entry(document_w_metadata, alambique)
-
-                    # 5. push to db/file
-                    push_entry(tool, alambique)
             
         else:
             logging.exception("Exception occurred")
