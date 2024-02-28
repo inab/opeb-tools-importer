@@ -14,7 +14,7 @@ cache:
 # every job's script section. The virtual environment directory (.venv here) is cached so that 
 # it's available for subsequent jobs.
 before_script:
-  - python -m venv .venv
+  - python3 -m venv .venv
   - source .venv/bin/activate
 
 dependencies:
