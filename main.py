@@ -44,7 +44,7 @@ def import_data():
         args = parser.parse_args()
         numeric_level = getattr(logging, args.loglevel.upper())
 
-        logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - toolshed - %(message)s', stream=sys.stdout)
+        logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s', stream=sys.stdout)
         
         # 0.2 Load .env
         logging.info("state_importation - 1")
