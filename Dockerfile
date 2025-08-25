@@ -1,15 +1,14 @@
-FROM ubuntu
+FROM python:3.12-slim
 
-COPY . ./
+# Faster logs + no .pyc files
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-RUN chmod 1777 /tmp
-# need git to install dependencies
-RUN apt-get upgrade -y 
-RUN apt-get update -y
-RUN apt-get install -y python3-pip
+WORKDIR /app
 
-RUN pip3 install -r ./requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
+COPY . .
 
-CMD python3 ./main.py -l=DEBUG
-
+CMD ["python", "main.py", "-l=DEBUG"]
