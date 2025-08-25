@@ -74,7 +74,7 @@ def import_data():
                 tool = get_bioconda_biotools_galaxy_tools(tool)
 
                 # only keep biotools 
-                if tool['source'] != 'biotools':
+                if tool['@data_source'] != 'biotools':
                     continue
 
                 if tool:
