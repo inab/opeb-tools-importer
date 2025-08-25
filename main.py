@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 import logging
+from dotenv import load_dotenv
+
 
 from utils import get_url, connect_db, push_entry, add_metadata_to_entry
 
@@ -71,6 +73,10 @@ def import_data():
                 # 4. Process metadata
                 tool = get_bioconda_biotools_galaxy_tools(tool)
 
+                # only keep biotools 
+                if tool['source'] != 'biotools':
+                    continue
+
                 if tool:
                     type_ = tool['@type']
                     name = tool['@label']
@@ -108,4 +114,5 @@ def import_data():
 
 
 if __name__ == '__main__':
+    load_dotenv()
     import_data()
