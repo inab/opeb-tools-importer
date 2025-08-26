@@ -176,7 +176,7 @@ def connect_db(collection_name: str):
 
     # Connect to MongoDB
     mongoClient = MongoClient(
-        host='localhost',
+        host='mongodb://host.docker.internal',
         port=int(mongoPort),
         username=mongoUser,
         password=mongoPass,

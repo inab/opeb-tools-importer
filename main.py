@@ -72,12 +72,13 @@ def import_data():
             for tool in tools:       
                 # 4. Process metadata
                 tool = get_bioconda_biotools_galaxy_tools(tool)
-
-                # only keep biotools 
-                if tool['@data_source'] != 'biotools':
-                    continue
-
+                
                 if tool:
+
+                    # only keep biotools 
+                    if tool['@data_source'] != 'biotools':
+                        continue
+
                     type_ = tool['@type']
                     name = tool['@label']
                     version = tool['@version']
