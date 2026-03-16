@@ -5,7 +5,7 @@ import logging
 from dotenv import load_dotenv
 
 
-from utils import get_url, connect_db, push_entry, add_metadata_to_entry
+from utils import get_url, connect_db, update_entry, add_metadata_to_entry
 
 
 def get_source(id_):
@@ -25,7 +25,7 @@ def get_bioconda_biotools_galaxy_tools(tool):
 
         tool['@source_url'] = tool['@id']
     else:
-        logging.info(f'canonical_tool {tool["name"]}')
+        #logging.info(f'canonical_tool {tool["name"]}')
         return None
 
     return(tool)
@@ -69,6 +69,7 @@ def import_data():
             # 3. Get tools
             logging.info(f'Processing {len(tools)} tools ...')
             #For tool in OPEB Tool db
+            n = 0 
             for tool in tools:       
                 # 4. Process metadata
                 tool = get_bioconda_biotools_galaxy_tools(tool)
@@ -78,6 +79,10 @@ def import_data():
                     # only keep biotools 
                     if tool['@data_source'] != 'biotools':
                         continue
+                        
+                    #if 'EUCAIM' not in tool['tags']:
+                    #    continue
+
 
                     type_ = tool['@type']
                     name = tool['@label']
@@ -92,8 +97,12 @@ def import_data():
                         '@data_source': source
                     }
 
+                    print('Creating metadata')
                     document_w_metadata = add_metadata_to_entry(identifier, entry, alambique)
-                    push_entry(document_w_metadata, alambique)
+
+                    print('Updating document')
+                    update_entry(document_w_metadata, alambique)
+                    #n_eucaim += 1
             
         else:
             logging.exception("Exception occurred")
@@ -109,6 +118,7 @@ def import_data():
         exit(1)
 
     else:
+        logging.info(f"Processed {n} tools")
         logging.info("state_importation - 0")
     
 

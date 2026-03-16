@@ -36,7 +36,10 @@ def create_metadata(identifier: str, alambique:Collection):
     }
     
     # Check if the entry exists in the database
+    print('Looking for existing id')
+    print(alambique.name)
     existing_entry = alambique.find_one({"_id": identifier})
+    print(f'Existing id: {bool(existing_entry)}')
     
     if not existing_entry:
         # This entry is new, so add additional creation metadata
@@ -162,12 +165,12 @@ def connect_db(collection_name: str):
 
     '''
     # variables come from .env file
-    mongoHost = os.getenv('HOST', default='localhost')
-    mongoPort = os.getenv('PORT', default='27017')
-    mongoUser = os.getenv('USER')
-    mongoPass = os.getenv('PASS')
-    mongoAuthSrc = os.getenv('AUTH_SRC', default='admin')
-    mongoDb = os.getenv('DB', default='oeb-research-software')
+    mongoHost = os.getenv('MONGO_HOST', default='localhost')
+    mongoPort = os.getenv('MONGO_PORT', default='27018')
+    mongoUser = os.getenv('MONGO_USER', default='oeb-rs-admin')
+    mongoPass = os.getenv('MONGO_PASS', default="rsoeb2023_own")
+    mongoAuthSrc = os.getenv('MONGO_AUTH_SRC', default='admin')
+    mongoDb = os.getenv('MONGO_DB', default='oeb-research-software')
 
     if collection_name == 'alambique':
         collection_name = os.getenv('ALAMBIQUE', default='alambiqueDev')
@@ -176,12 +179,19 @@ def connect_db(collection_name: str):
 
     # Connect to MongoDB
     mongoClient = MongoClient(
-        host='mongodb://host.docker.internal',
-        port=int(mongoPort),
+        #host='mongodb://host.docker.internal',
+        #'mongodb://127.0.0.1:27018',
+        host=mongoHost,
+        port=mongoPort,
         username=mongoUser,
         password=mongoPass,
         authSource=mongoAuthSrc,
+        authMechanism='SCRAM-SHA-256'
     )
+
+    mongoClient.admin.command('ping')
+    print("MongoDB connection established successfully")
+    
     db = mongoClient[mongoDb]
     alambique = db[collection_name]
 
