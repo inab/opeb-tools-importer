@@ -59,24 +59,12 @@ If the ENV variables are stored in an `.env` file:
 
 | Name             | Description | Default | Notes |
 |------------------|-------------|---------|-------|
-| HOST       |  Host of database where output will be pushed |   `localhost`        |  |
-| PORT       |  Port of database where output will be pushed |   `27017`            |  |
-| USER       |  User of database where output will be pushed |            |  |
-| PASS   |  Password of database where output will be pushed |            |  |
-| AUTH_SRC  |  Authentication source of database where output will be pushed |   `admin`  |  |
-| DB         |  Name of database where output will be pushed |   `observatory`      |  |
+| MONGO_HOST       |  Host of database where output will be pushed |   `localhost`        |  |
+| MONGO_PORT       |  Port of database where output will be pushed |   `27017`            |  |
+| MONGO_USER       |  User of database where output will be pushed |            |  |
+| MONGO_PASS   |  Password of database where output will be pushed |            |  |
+| MONGO_AUTH_SRC  |  Authentication source of database where output will be pushed |   `admin`  |  |
+| MONGO_DB         |  Name of database where output will be pushed |   `observatory`      |  |
 | ALAMBIQUE |  Name of database where output will be pushed  |   `alambique`        |  |
 | URL_OPEB_TOOLS | URL to OpenEBench Tools API | `https://openebench.bsc.es/monitor/tool` | |
 
-## CI/CD
-
-This repository is integrated with GitLab CI/CD. The pipeline is defined in `.gitlab-ci.yml`. It is composed of the following stages:
-
-| Stage | Description | Runs |
-|-------|-------------|------|
-| `dependencies` | Installs the dependencies | Always |
-| `main_task` | Data importation | Manually or on schedule |
-| `publish` | Builds and publishes the Docker image to the GitLab registry. The resulting image is tagged with the release tag | When a tag is created |
-
-> :bulb: **Variables**
-> The pipeline uses the variables `DOCKERHUB_USERNAME` and `DOCKERHUB_PASSWORD`. These variables are defined in the GitLab CI/CD settings.

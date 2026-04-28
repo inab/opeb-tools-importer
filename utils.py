@@ -36,10 +36,10 @@ def create_metadata(identifier: str, alambique:Collection):
     }
     
     # Check if the entry exists in the database
-    print('Looking for existing id')
-    print(alambique.name)
+    #print('Looking for existing id')
+    #print(alambique.name)
     existing_entry = alambique.find_one({"_id": identifier})
-    print(f'Existing id: {bool(existing_entry)}')
+    #print(f'Existing id: {bool(existing_entry)}')
     
     if not existing_entry:
         # This entry is new, so add additional creation metadata
@@ -105,7 +105,8 @@ def push_entry(tool:dict, collection: Collection):
         logging.warning(f"error - {type(e).__name__} - {e}")
 
     else:
-        logging.info(f"pushed_to_db_ok - {tool['_id']}")
+        # logging.info(f"pushed_to_db_ok - {tool['_id']}")
+        pass
     finally:
         return
     
@@ -137,7 +138,8 @@ def update_entry(entry: dict, collection: Collection):
         # Make sure to set upsert=True if you want to insert a new document when no document matches the filter
         result = collection.replace_one({"_id": entry['_id']}, update_document, upsert=True)
         if result.matched_count > 0:
-            logging.info(f"Document with _id {entry['_id']} updated successfully.")
+            #logging.info(f"Document with _id {entry['_id']} updated successfully.")
+            pass
         else:
             logging.info(f"No matching document found with _id {entry['_id']}. A new document has been inserted.")
     except Exception as e:
@@ -155,7 +157,8 @@ def inset_new_entry(entry: dict, collection: Collection):
     except Exception as e:
         logging.warning(f"error - {type(e).__name__} - {e}")
     else:
-        logging.info(f"inserted_to_db_ok - {entry['_id']}")
+        #logging.info(f"inserted_to_db_ok - {entry['_id']}")
+        pass
     finally:
         return
 
@@ -166,7 +169,7 @@ def connect_db(collection_name: str):
     '''
     # variables come from .env file
     mongoHost = os.getenv('MONGO_HOST', default='localhost')
-    mongoPort = os.getenv('MONGO_PORT', default='27018')
+    mongoPort = os.getenv('MONGO_PORT', default=27018)
     mongoUser = os.getenv('MONGO_USER', default='oeb-rs-admin')
     mongoPass = os.getenv('MONGO_PASS', default="rsoeb2023_own")
     mongoAuthSrc = os.getenv('MONGO_AUTH_SRC', default='admin')
@@ -175,14 +178,14 @@ def connect_db(collection_name: str):
     if collection_name == 'alambique':
         collection_name = os.getenv('ALAMBIQUE', default='alambiqueDev')
     
-    print(f"Connecting to {collection_name} collection.")
+    #print(f"Connecting to {collection_name} collection.")
 
     # Connect to MongoDB
     mongoClient = MongoClient(
         #host='mongodb://host.docker.internal',
         #'mongodb://127.0.0.1:27018',
         host=mongoHost,
-        port=mongoPort,
+        port=27018,
         username=mongoUser,
         password=mongoPass,
         authSource=mongoAuthSrc,
@@ -190,7 +193,7 @@ def connect_db(collection_name: str):
     )
 
     mongoClient.admin.command('ping')
-    print("MongoDB connection established successfully")
+    #print("MongoDB connection established successfully")
     
     db = mongoClient[mongoDb]
     alambique = db[collection_name]
