@@ -1,1 +1,28 @@
-./scheduled/*
+# Secrets: never bake credentials into the image; pass them at runtime (--env-file / compose env_file)
+.env
+.env.*
+
+# VCS, CI and editor/tool metadata
+.git
+.github
+.qodo
+.claude
+CLAUDE.md
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local run output
+inspection_openebench_import/
+
+# Not needed at runtime
+scheduled/
+Dockerfile
+docker-compose.yml
+README.md
+LICENSE
+Pipfile
+Pipfile.lock

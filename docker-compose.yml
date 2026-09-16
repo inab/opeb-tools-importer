@@ -1,0 +1,25 @@
+# One-shot OpenEBench tools importation.
+#
+#   docker compose run --rm importer                          # full import into MongoDB
+#   docker compose run --rm importer --dry-run -l DEBUG       # no DB connection, inspection files only
+#
+# Inspection files are written to ./inspection_openebench_import on the host.
+# They are append-only: clear that directory before a run you intend to analyze.
+
+services:
+  importer:
+    build: .
+    image: ghcr.io/inab/opeb-tools-importer:latest
+    platform: linux/amd64
+    env_file: .env
+    environment:
+      # .env typically points at localhost, which inside the container is the container itself.
+      # Default to the Docker host; override with IMPORTER_MONGO_HOST=<host> for a remote MongoDB.
+      # NOTE: utils.connect_db ignores MONGO_PORT and always connects to port 27018.
+      MONGO_HOST: ${IMPORTER_MONGO_HOST:-host.docker.internal}
+    extra_hosts:
+      # Makes host.docker.internal resolve on Linux too (Docker Desktop provides it already)
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./inspection_openebench_import:/app/inspection_openebench_import
+    restart: "no"

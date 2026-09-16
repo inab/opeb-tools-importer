@@ -1,0 +1,8 @@
+[project]
+name = "opeb-tools-importer"
+# Single source of truth for the release version. The release tag must be "v<version>".
+version = "0.1.1"
+description = "Imports OpenEBench tool entries (from bio.tools) into the Software Observatory MongoDB"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
